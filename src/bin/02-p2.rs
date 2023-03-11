@@ -6,45 +6,29 @@ struct Cli {
     test: bool,
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
-enum Play {
-    Rock = 1,
-    Paper = 2,
-    Scissors = 3,
-}
+type Play = i32;
+const ROCK: Play = 0;
+const PAPER: Play = 1;
+const SCISSORS: Play = 2;
 
-impl TryFrom<i32> for Play {
-    type Error = String;
-    fn try_from(value: i32) -> Result<Self, Self::Error> {
-        match value {
-            1 => Ok(Play::Rock),
-            2 => Ok(Play::Paper),
-            3 => Ok(Play::Scissors),
-            _ => Err(format!("invalid play: {}", value)),
-        }
-    }
-}
-
-enum Outcome {
-    Lose = 0,
-    Draw = 3,
-    Win = 6,
-}
+type Outcome = i32;
+const LOSE: Outcome = 0;
+const DRAW: Outcome = 3;
+const WIN: Outcome = 6;
 
 fn result(play: Play, other: Play) -> Outcome {
     if play == other {
-        return Outcome::Draw;
+        return DRAW;
     }
-    return if ((other as i32 - 1) + 1) % 3 == (play as i32 - 1) {
-        Outcome::Win
-    } else {
-        Outcome::Lose
-    };
+    return if (other + 1) % 3 == play { WIN } else { LOSE };
 }
 
 fn score(play: Play, other: Play) -> i32 {
+    assert!(play >= 0 && play <= 2);
+    assert!(other >= 0 && other <= 2);
+
     let outcome = result(play, other);
-    return outcome as i32 + play as i32;
+    return outcome + (play + 1);
 }
 
 fn main() {
@@ -60,20 +44,20 @@ fn main() {
             return None;
         };
 
-        let other = match other {
-            "A" => Play::Rock,
-            "B" => Play::Paper,
-            "C" => Play::Scissors,
-            _ => panic!("invalid other: {other}"),
+        let other: Play = match other {
+            "A" => ROCK,
+            "B" => PAPER,
+            "C" => SCISSORS,
+            _ => panic!("invalid play"),
         };
 
         let player = match action {
             // lose
-            "X" => Play::try_from((other as i32 - 2).rem_euclid(3) + 1).unwrap(),
+            "X" => (other - 1).rem_euclid(3),
             // draw
             "Y" => other,
             // win
-            "Z" => Play::try_from(((other as i32).rem_euclid(3)) + 1).unwrap(),
+            "Z" => (other + 1).rem_euclid(3),
             _ => panic!("invalid action: {action}"),
         };
 

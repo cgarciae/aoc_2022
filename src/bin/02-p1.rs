@@ -6,33 +6,26 @@ struct Cli {
     test: bool,
 }
 
-#[derive(Debug, PartialEq, Eq, Hash, Copy, Clone)]
-enum Play {
-    Rock = 1,
-    Paper = 2,
-    Scissors = 3,
-}
+type Play = i32;
+const ROCK: Play = 0;
+const PAPER: Play = 1;
+const SCISSORS: Play = 2;
 
-enum Outcome {
-    Lose = 0,
-    Draw = 3,
-    Win = 6,
-}
+type Outcome = i32;
+const LOSE: Outcome = 0;
+const DRAW: Outcome = 3;
+const WIN: Outcome = 6;
 
 fn result(play: Play, other: Play) -> Outcome {
     if play == other {
-        return Outcome::Draw;
+        return DRAW;
     }
-    return if ((other as i32 - 1) + 1) % 3 == (play as i32 - 1) {
-        Outcome::Win
-    } else {
-        Outcome::Lose
-    };
+    return if (other + 1) % 3 == play { WIN } else { LOSE };
 }
 
 fn score(play: Play, other: Play) -> i32 {
     let outcome = result(play, other);
-    return outcome as i32 + play as i32;
+    return outcome + play + 1;
 }
 
 fn main() {
@@ -48,17 +41,17 @@ fn main() {
             return None;
         };
 
-        let other = match other {
-            "A" => Play::Rock,
-            "B" => Play::Paper,
-            "C" => Play::Scissors,
+        let other: Play = match other {
+            "A" => ROCK,
+            "B" => PAPER,
+            "C" => SCISSORS,
             _ => panic!("invalid play"),
         };
 
-        let player = match player {
-            "X" => Play::Rock,
-            "Y" => Play::Paper,
-            "Z" => Play::Scissors,
+        let player: Play = match player {
+            "X" => ROCK,
+            "Y" => PAPER,
+            "Z" => SCISSORS,
             _ => panic!("invalid play"),
         };
 
